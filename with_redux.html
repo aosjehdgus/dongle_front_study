@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.5/redux.js"></script>
+</head>
+
+<body>
+    <style>
+        .container {
+            border: 5px solid black;
+            padding: 10px;
+        }
+    </style>
+    <div id="red"> </div>
+    <div id="blue"></div>
+    <div id="green"></div>
+
+    <script>
+
+        // reducer는 store의 state값을 변경 해준다.
+        // 어떻게? 이전의 state와 action을 받아서 새로운 state값을 return해주면
+        // 그 return된 값이 새로운 state 값이 된다.
+
+        function reducer(state, action) {
+            // 초기화를 위해 최초로 실행되는 reducer에 대한 호출이다. 
+            console.log(state, action);
+            if (state === undefined) {
+                return { color: 'yellow' } // 원하는 초기 값을 리턴해주게 되면
+            }
+            var newState;
+            if (action.type === 'CHANGE_COLOR') {
+                // 객체의 복사를 통해서 원본 state를 immutable(불변)하게 유지 해주면서 데이터의 가변성을 구현한다.
+                // 객체의 복사를 통해서 구현을 해야만 redux의 다른 기능들을 사용할 수 있게 된다.
+                newState = Object.assign({}, state, { color: action.color })
+
+            }
+
+            return newState;
+        }
+        var store = Redux.createStore(reducer); // store에 초기 값이 지정이 되는 것이다.
+
+        function red() {
+            var state = store.getState(); // getState()를 통해서 state 값을 가져오게 되고, 가져온 state 값을 통해서 초기 color 값을 지정할 수 있게 된 것이다.
+            // state가 바뀌었을 때, state가 바뀌었다라는 action을 store에 dispatch 해준다.
+            // 그리고 그에 따라서 어떻게 변화되어야 하는지에 대한 코드를 작성하고 store에 구독을 시켜주면
+            // state 값이 바뀔 때 마다 통보를 받기 때문에 자신의 모양을 바꿔줄 수 있는 것이다.
+            document.querySelector('#red').innerHTML = `
+                <div class = "container" id = "component_red" style = "background-color: ${state.color}">
+                    <h1> red </h1>
+                    <input type = "button" value = "change" onclick = "
+                        store.dispatch({type : 'CHANGE_COLOR', color : 'red '});
+                    ">
+                </div>
+            `;
+        }
+        //state 값이 바뀔 때마다 red 함수가 호출되게 만든다.
+        store.subscribe(red);
+        red();
+
+        function blue() {
+            var state = store.getState(); 
+            document.querySelector('#blue').innerHTML = `
+                <div class = "container" id = "component_blue" style = "background-color: ${state.color}">
+                    <h1> blue </h1>
+                    <input type = "button" value = "change" onclick = "
+                        store.dispatch({type : 'CHANGE_COLOR', color : 'blue '});
+                    ">
+                </div>
+            `;
+        }
+
+        store.subscribe(blue);
+        blue();
+
+        function green() {
+            var state = store.getState(); 
+            document.querySelector('#green').innerHTML = `
+                <div class = "container" id = "component_green" style = "background-color: ${state.color}">
+                    <h1> green </h1>
+                    <input type = "button" value = "change" onclick = "
+                        store.dispatch({type : 'CHANGE_COLOR', color : 'green '});
+                    ">
+                </div>
+            `;
+        }
+
+        store.subscribe(green);
+        green();
+
+    </script>
+
+</body>
+
+</html>
+
